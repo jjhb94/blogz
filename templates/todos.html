@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <form method='post'>
+        <label>
+            New title for blog:
+            <br>
+            <input type="text" name='blog' />
+        </label>
+        <br>
+        <label>
+            Your new blog:
+            <br>
+            <textarea rows="10" col="50" name="body">
+
+            </textarea>
+        </label>
+        <input type="submit" value='Add Blog' />
+    </form>
+
+    <hr />
+
+    {% if blogs|length == 0 %}
+    <p>No blog entries yet</p>
+    
+    {% endif %}
+
+    <hr />
+
+{% endblock %}
