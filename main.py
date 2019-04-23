@@ -31,8 +31,8 @@ def newpost():
         new_blog = Blog(blog_name, blog_body)
         db.session.add(new_blog)
         db.session.commit()
-        
-        return redirect('/blog?id={0}'.format(new_blog.id))
+
+        return redirect('/blog?id={0}'.format(new_blog.id)) # this will return the new page after we hit submit
 
     blogs = Blog.query.all()
     return render_template('todos.html',title="Build a Blog", 
