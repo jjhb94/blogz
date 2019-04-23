@@ -21,8 +21,8 @@ class Blog(db.Model):
     def __repr__(self):
         return '<Blog {0}>'.format(self.title)
 
-@app.route('/', methods=['POST', 'GET'])
-def index():
+@app.route('/newpost', methods=['POST', 'GET'])
+def newpost():
 
     if request.method == 'POST':
         blog_name = request.form['blog']
@@ -31,15 +31,28 @@ def index():
         new_blog = Blog(blog_name, blog_body)
         db.session.add(new_blog)
         db.session.commit()
+        
+        return redirect('/blog?id={0}'.format(new_blog.id))
 
     blogs = Blog.query.all()
     return render_template('todos.html',title="Build a Blog", 
         blogs=blogs)
 
-@app.route('/blog')
+@app.route('/blog', methods=['GET', 'POST'])
 def home():
-    blogs = Blog.query.all()
-    return render_template('base.html', title="Build a Blog", completed_blogs=blogs, blogs=blogs)
+    id = request.args.get("id")
+    '''now we make a conditional to return the blog post if the ID is in the URL, 
+       or just the main page with the blog posts '''
+    if id:  # if the ID is in the URL,
+        blogs = Blog.query.filter_by(id=id).all() # grab all of the blog entries on the main page and return them
+        return render_template('blog.html', title="Build a Blog", 
+            blogs=blogs )
+    else:
+
+        blogs = Blog.query.all()
+        return render_template('blog.html', title="Build a Blog",
+            blogs=blogs)
+
 
 if __name__ == '__main__':
     app.run()

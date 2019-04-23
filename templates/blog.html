@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if request.args.get("id") %} <!-- this is grabbing the argument and stating that it is true if ID is in URL-->
+        {% for blog in blogs %}
+            <li>
+                <p>{{blog.title}}</p><br>
+                <p>{{blog.body}}</p>
+            </li>
+        {% endfor %}
+    {% else %}
+        {% for blog in blogs %}
+            <li>
+                <p>{{blog.new_blog}}</p>
+                <a href="/blog?id={{ blog.id }}">{{blog.title}}</a> <!-- is is the parameter that we are usining to return the blog post -->
+            </li>
+        {% endfor %} 
+    {% endif %}
+{% endblock %}

@@ -4,18 +4,16 @@
         <title>{{title}}</title>
     </head>
 <body>
+    
     <h1>
         <a href="/blog">{{title}}</a>
     </h1>
-
-    <ul>
-        {% for blog in completed_blogs %}
-        <li>
-            <a href="/{{blog.title}}">{{blog.title}}</a>
-        </li>
-        {% endfor %}
-    </ul>
+    <h1>
+        <a href="/newpost">New blog entry</a>
+    </h1>
+    
     {% block content %}
+    
     {% endblock %}
 
 </body>
