@@ -3,15 +3,15 @@ from flask_sqlalchemy import SQLAlchemy # this is the ORM; sequel alchemy needs 
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://build-a-blog:!2b_brkn@localhost:8889/build-a-blog' # this is the connection string 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:!2B_brkn@localhost:8889/blogz' # this is the connection string 
 app.config['SQLALCHEMY_ECHO'] = True # this will show the SQL queries; not necessary 
 db = SQLAlchemy(app)  #making a new database object 
 
 # here is where you will create a model
 # the model creates a python object to create a blog class with properties (i.d., title, body)
 
-class Blog(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+class Blog(db.Model): # this creates a persistent class, or a class that can be stored in the data base 
+    id = db.Column(db.Integer, primary_key=True)   # every class that is to be stored in a data base will have an id - a primary key
     title = db.Column(db.String(120))
     body = db.Column(db.String(1000))
 
@@ -54,5 +54,5 @@ def home():
             blogs=blogs)
 
 
-if __name__ == '__main__':
-    app.run()
+if __name__ == '__main__':   # this is a shield for the app.run() so that the code above is ONLY run when we run the main.py file directly
+    app.run()               # it lets the program start if you want without running a full blown flask application. 
