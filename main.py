@@ -14,12 +14,24 @@ class Blog(db.Model): # this creates a persistent class, or a class that can be 
     id = db.Column(db.Integer, primary_key=True)   # every class that is to be stored in a data base will have an id - a primary key
     title = db.Column(db.String(120))
     body = db.Column(db.String(1000))
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self, title, body): # this is the constructor class and is necessary to initialize a class and its objects
+    def __init__(self, title, body, owner): # this is the constructor class and is necessary to initialize a class and its objects
         self.title = title
         self.body = body
+        self.owner = owner
     def __repr__(self):
         return '<Blog {0}>'.format(self.title)
+
+class User(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        username = db.Column(db.String(25))
+        password = db.Column(db.String(25))
+        blogs = db.relationship('Blog', backref='owner') # this signifies the relationship between the blog table and this user, binding user to blog posts they write
+
+        def __init__(self, username, password):
+            self.username = username
+            self.password = password 
 
 @app.route('/newpost', methods=['POST', 'GET'])
 def newpost():
