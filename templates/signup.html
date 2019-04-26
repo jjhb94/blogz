@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+    {% block content %}
+    <h1><strong>User Signup</strong></h1>
+    <form method="post" >
+        <table>
+            <tbody>
+                <tr>
+                    <td><label for="usr_name">Username </label></td>
+                    <td>
+                        <input type="text" id="usr_name" name="User-name"
+                            pattern="[\S+].{3,20}" value="{{valid_credentials}}"required/>
+                        <span id="error" class="error">{{invalid_credentials}}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="passwd">Password (Between 3 and 20 characters): </label></td>
+                    <td>
+                        <input type="password" id="passwd" name="Password"
+                            pattern="[\S+a-zA-Z0-9@#!].{3,20}" required/>
+                        <span id="error" class="error">{{invalid_password}}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="confirm_passwd">Confirm Password </label></td>
+                    <td>
+                        <input type="password" id="confirm_passwd" name="Confirm-Password"
+                            pattern="[\S+a-zA-Z0-9@#!].{3,20}" required/>
+                        <span id="error" class="error">{{dont_match}}</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <input type="submit" name="submit query" />
+    </form>
+
+    {% endblock %}
