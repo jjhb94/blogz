@@ -3,17 +3,21 @@
 {% block content %}
     {% if request.args.get("id") %} <!-- this is grabbing the argument and stating that it is true if ID is in URL-->
         {% for blog in blogs %}
-            <li>
-                <p>{{blog.title}}</p><br>
+            <ul>
+                <p>
+                    <a href="/blog?id={{ blog.id }}">{{blog.title}}</a>
+                </p>
                 <p>{{blog.body}}</p>
-            </li>
+                <p>written by {{blog.owner.username}}</p>
+            </ul><br>
         {% endfor %}
     {% else %}
         {% for blog in blogs %}
-            <li>
+            <ul>
                 <p>{{blog.new_blog}}</p>
                 <a href="/blog?id={{ blog.id }}">{{blog.title}}</a> <!-- is is the parameter that we are usining to return the blog post -->
-            </li>
+                <p>written by {{blog.owner.username}}</p>
+            </ul>
         {% endfor %} 
     {% endif %}
 {% endblock %}

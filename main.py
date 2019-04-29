@@ -56,8 +56,8 @@ def newpost():
         return redirect('/blog?id={0}'.format(new_blog.id)) # this will return the new page after we hit submit
 
     blogs = Blog.query.filter_by(owner=owner).all()
-    return render_template('todos.html',title="Build a Blog", 
-        blogs=blogs)
+    return render_template('todos.html',title="Blogz", 
+        blogs=blogs, owner=owner)
 
 @app.route('/blog', methods=['GET', 'POST'])
 def home():
@@ -67,13 +67,12 @@ def home():
        or just the main page with the blog posts '''
     if id:  # if the ID is in the URL,
         blogs = Blog.query.filter_by(owner=owner).all() # grab all of the blog entries on the main page and return them
-        return render_template('blog.html', title="Build a Blog", 
-            blogs=blogs )
+        return render_template('blog.html', title="Blogz", 
+            blogs=blogs, owner=owner )
     else:
-
         blogs = Blog.query.all()
-        return render_template('blog.html', title="Build a Blog",
-            blogs=blogs)
+        return render_template('blog.html', title="Blogz",
+            blogs=blogs, owner=owner)
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
