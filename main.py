@@ -66,7 +66,7 @@ def home():
     '''now we make a conditional to return the blog post if the ID is in the URL, 
        or just the main page with the blog posts '''
     if id:  # if the ID is in the URL,
-        blogs = Blog.query.filter_by(owner=owner).all() # grab all of the blog entries on the main page and return them
+        blogs = Blog.query.filter_by(id=id).all() # grab all of the blog entries on the main page and return them
         return render_template('blog.html', title="Blogz", 
             blogs=blogs, owner=owner )
     else:
