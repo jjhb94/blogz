@@ -2,13 +2,34 @@
 <html>
     <head>
         <title>{{title}}</title>
+        <!--<style>
+            <link rel="stylesheet" type="text/css" href="styles.css">
+        </style>   Not sure why this css is not working. Will fix later-->
     </head>
 <body>
-    <h3>
-        <a href="/">Home</a>
-        <a href="/blog">All Posts</a>
-        <a href="/newpost">New blog entry</a>
-    </h3>
+    <nav>
+        <h3>
+            <ul id="user account">
+                <li>
+                    <a href="/login">Login</a>
+                </li>
+                <li>
+                    <a href="/logout">Logout</a>
+                </li>
+            </ul>
+            <ul>
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                <li>
+                    <a href="/blog">All Posts</a>
+                </li>
+                <li>
+                    <a href="/newpost">New blog entry</a>
+                </li>
+            </ul>
+        </h3>
+    </nav>
     <h1>
         <a href="/blog">{{title}}</a>
     </h1>
@@ -22,6 +43,5 @@
     {% block content %}
     
     {% endblock %}
-
 </body>
 </html>
