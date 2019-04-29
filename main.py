@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template, session
+from flask import Flask, request, redirect, render_template, session, flash
 from flask_sqlalchemy import SQLAlchemy # this is the ORM; sequel alchemy needs a connection string to do its job
 
 app = Flask(__name__)
@@ -79,6 +79,8 @@ def login():
             account = User.query.filter_by(username=user).first() # this retrieves the first user with the username 
             if account and account.password == passwd: # this is convoluted, but detailed and it works for the signing in function
                 session['user'] = user
+                flash("Login successful")
+                print(session)
                 return redirect('/blog')
             elif account:
                 password_error = 'Password is incorrect'
@@ -119,6 +121,7 @@ def signup():
 @app.route('/logout')
 def logout():
     del session['user']
+    flash("Successfully Logged Out")
     return redirect('/')
 
 @app.route('/')
