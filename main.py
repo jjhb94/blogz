@@ -16,10 +16,10 @@ class Blog(db.Model): # this creates a persistent class, or a class that can be 
     body = db.Column(db.String(1000))
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self, title, body, owner): # this is the constructor class and is necessary to initialize a class and its objects
+    def __init__(self, title, body): # this is the constructor class and is necessary to initialize a class and its objects
         self.title = title
         self.body = body
-        self.owner = owner
+
     def __repr__(self):
         return '<Blog {0}>'.format(self.title)
 
@@ -50,6 +50,13 @@ def newpost():
     return render_template('todos.html',title="Build a Blog", 
         blogs=blogs)
 
+@app.route('/delete-blog-post', methods=['POST'])
+def delete_posts():
+    blog_id = int(request.form['blog-id'])
+    blog = Blog.query.get(blog_id)
+    db.session.delete(blog)
+    db.session.commit()
+    return redirect('/')
 @app.route('/blog', methods=['GET', 'POST'])
 def home():
     id = request.args.get("id")
@@ -64,6 +71,59 @@ def home():
         blogs = Blog.query.all()
         return render_template('blog.html', title="Build a Blog",
             blogs=blogs)
+
+@app.route('/')
+def main_page():
+    #if login is true:
+    return redirect('/login')
+    #else:
+    # return redirect login.html 
+
+@app.route('/login', methods=['GET','POST'])
+def login():
+    return render_template('login.html')
+
+@app.route('/login', methods=['POST', 'GET'])
+def verify_login():
+    if request.method == 'POST':
+        user = request.form['username']
+        username_error = ''
+        if user not in User.query.all():
+            username_error = 'this username does not exist'
+            return render_template('/login', valid_credentials=username_error)
+        else:
+            return render_template('base.html')
+
+
+
+@app.route('/signup')
+def signup():
+    return render_template('signup.html')
+
+@app.route("/signup", methods=['POST'])
+def validate():
+
+    user_name = request.form["User-name"] #this takes the number field and converts it into int
+    username_error =''
+    password_error =''
+
+    user_password = request.form["Password"] # this takes what is is the text box and passes it to the the variable 
+    confirm_password = request.form["Confirm-Password"]
+    
+    if (not user_name) or (' ' in user_name):
+        username_error = 'That is not a valid username'
+    if user_password != confirm_password:
+        password_does_not_match = 'passwords do not match'
+        password_error = 'that is not a valid password'
+        return render_template('signup.html', valid_credentials=user_name, invalid_credentials=username_error, invalid_password=password_error, dont_match=password_does_not_match)
+       
+    else:
+        new_user = User(user_name, user_password)
+        db.session.add(new_user)
+        db.session.commit()
+
+        return redirect('/newpost?id={0}'.format(new_user.id)) # this will return the new page after we hit submit
+
 
 
 if __name__ == '__main__':   # this is a shield for the app.run() so that the code above is ONLY run when we run the main.py file directly
