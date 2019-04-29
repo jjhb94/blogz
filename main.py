@@ -65,13 +65,6 @@ def home():
         return render_template('blog.html', title="Build a Blog",
             blogs=blogs)
 
-@app.route('/')
-def main_page():
-    #if login is true:
-    return redirect('/login')
-    #else:
-    # return redirect login.html 
-
 @app.route('/login', methods=['POST', 'GET'])
 def login():
         if request.method == 'POST':
@@ -83,7 +76,8 @@ def login():
                 return redirect('/blog')
             else:
                 # return why the login failed
-                return '<h1>Error</h1>'
+                username_error = 'this user does not exist'
+                return render_template('login.html', valid_credentials=user, invalid_credentials=username_error)
         return render_template('login.html')
 
 @app.route('/signup', methods=['POST', 'GET'])
@@ -95,52 +89,29 @@ def signup():
         
         existing_account = User.query.filter_by(username=user).first()
         if not existing_account:
+            if (not user) or (' ' in user):
+                username_error= 'That is not a valid username'
+            if passwd != confirm_passwd:
+                password_does_not_match = 'passwords do not match'
+                password_error = 'that is not a valid password'
+                return render_template('signup.html', valid_credentials=user, invalid_credentials=username_error, invalid_password=password_error, dont_match=password_does_not_match)
+            # add remember user has signed in
             new_account = User(user, passwd)
             db.session.add(new_account)
             db.session.commit()
-            # add remember user has signed in
-            return redirect('/blog')
+            return redirect('/newpost?id={0}'.format(new_account.id))
         else:
-            return '<h1> Duplicate user </h1?>'
+            username_error = 'This account already exists'
+            return render_template('signup.html', valid_credentials=user, invalid_credentials=username_error)
         # need to validate user data 
     return render_template('signup.html')
 
-@app.route('/login', methods=['POST'])
-def verify_login():
-    if request.method == 'POST':
-        user = request.form['username']
-        username_error = ''
-        if user not in User.query.all():
-            username_error = 'this username does not exist'
-            return render_template('login.html', valid_credentials=user, invalid_credentials=username_error)
-        else:
-            return render_template('base.html')
-
-
-@app.route("/signup", methods=['POST'])
-def validate():
-
-    user_name = request.form["User-name"] #this takes the number field and converts it into int
-    username_error =''
-    password_error =''
-
-    user_password = request.form["Password"] # this takes what is is the text box and passes it to the the variable 
-    confirm_password = request.form["Confirm-Password"]
-    
-    if (not user_name) or (' ' in user_name):
-        username_error = 'That is not a valid username'
-    if user_password != confirm_password:
-        password_does_not_match = 'passwords do not match'
-        password_error = 'that is not a valid password'
-        return render_template('signup.html', valid_credentials=user_name, invalid_credentials=username_error, invalid_password=password_error, dont_match=password_does_not_match)
-       
-    else:
-        new_user = User(user_name, user_password)
-        db.session.add(new_user)
-        db.session.commit()
-
-        return redirect('/newpost?id={0}'.format(new_user.id)) # this will return the new page after we hit submit
-
+@app.route('/')
+def main_page():
+    #if login is true:
+    return redirect('/login')
+    #else:
+    # return redirect login.html 
 
 
 if __name__ == '__main__':   # this is a shield for the app.run() so that the code above is ONLY run when we run the main.py file directly
