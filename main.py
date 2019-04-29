@@ -16,9 +16,10 @@ class Blog(db.Model): # this creates a persistent class, or a class that can be 
     body = db.Column(db.String(1000))
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self, title, body): # this is the constructor class and is necessary to initialize a class and its objects
+    def __init__(self, title, body, owner): # this is the constructor class and is necessary to initialize a class and its objects
         self.title = title
         self.body = body
+        self.owner = owner
 
     def __repr__(self):
         return '<Blog {0}>'.format(self.title)
@@ -42,27 +43,30 @@ def require_login(): # this checks every request to make sure that the user HAS 
 @app.route('/newpost', methods=['POST', 'GET'])
 def newpost():
 
+    owner = User.query.filter_by(username=session['user']).first()
+
     if request.method == 'POST':
         blog_name = request.form['blog']
         blog_body = request.form['body']
-        
-        new_blog = Blog(blog_name, blog_body)
+        owner = User.query.filter_by(username=session['user']).first()
+        new_blog = Blog(blog_name, blog_body, owner)
         db.session.add(new_blog)
         db.session.commit()
 
         return redirect('/blog?id={0}'.format(new_blog.id)) # this will return the new page after we hit submit
 
-    blogs = Blog.query.all()
+    blogs = Blog.query.filter_by(owner=owner).all()
     return render_template('todos.html',title="Build a Blog", 
         blogs=blogs)
 
 @app.route('/blog', methods=['GET', 'POST'])
 def home():
+    owner = User.query.filter_by(username=session['user']).first()
     id = request.args.get("id")
     '''now we make a conditional to return the blog post if the ID is in the URL, 
        or just the main page with the blog posts '''
     if id:  # if the ID is in the URL,
-        blogs = Blog.query.filter_by(id=id).all() # grab all of the blog entries on the main page and return them
+        blogs = Blog.query.filter_by(owner=owner).all() # grab all of the blog entries on the main page and return them
         return render_template('blog.html', title="Build a Blog", 
             blogs=blogs )
     else:
@@ -126,8 +130,9 @@ def logout():
 
 @app.route('/')
 def main_page():
-    #if login is true:
-    return redirect('/login')
+    owner = User.query.filter_by(username=session['user']).first()
+    if 'user' in session:
+        return redirect('/blog?id={0}'.format(owner.id))
     #else:
     # return redirect login.html 
 

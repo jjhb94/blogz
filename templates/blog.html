@@ -2,7 +2,7 @@
 
 {% block content %}
     {% if request.args.get("id") %} <!-- this is grabbing the argument and stating that it is true if ID is in URL-->
-        {% for username in Users %}
+        {% for blog in blogs %}
             <li>
                 <p>{{blog.title}}</p><br>
                 <p>{{blog.body}}</p>
