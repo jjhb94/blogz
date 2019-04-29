@@ -57,6 +57,8 @@ def delete_posts():
     db.session.delete(blog)
     db.session.commit()
     return redirect('/')
+
+
 @app.route('/blog', methods=['GET', 'POST'])
 def home():
     id = request.args.get("id")
@@ -79,18 +81,18 @@ def main_page():
     #else:
     # return redirect login.html 
 
-@app.route('/login', methods=['GET','POST'])
+@app.route('/login', methods=['GET'])
 def login():
     return render_template('login.html')
 
-@app.route('/login', methods=['POST', 'GET'])
+@app.route('/login', methods=['POST'])
 def verify_login():
     if request.method == 'POST':
         user = request.form['username']
         username_error = ''
         if user not in User.query.all():
             username_error = 'this username does not exist'
-            return render_template('/login', valid_credentials=username_error)
+            return render_template('login.html', valid_credentials=user, invalid_credentials=username_error)
         else:
             return render_template('base.html')
 
