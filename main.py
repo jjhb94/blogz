@@ -88,6 +88,21 @@ def login():
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
+    if request.method == 'POST':
+        user = request.form['User-name']
+        passwd = request.form['Password']
+        confirm_passwd = request.form['Confirm-Password']
+        
+        existing_account = User.query.filter_by(username=user).first()
+        if not existing_account:
+            new_account = User(user, passwd)
+            db.session.add(new_account)
+            db.session.commit()
+            # add remember user has signed in
+            return redirect('/blog')
+        else:
+            return '<h1> Duplicate user </h1?>'
+        # need to validate user data 
     return render_template('signup.html')
 
 @app.route('/login', methods=['POST'])
