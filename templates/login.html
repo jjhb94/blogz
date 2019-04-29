@@ -9,7 +9,7 @@
         <tr>
             <td><label for ="username">Username</label></td>
             <td>
-                <input id=username name="username" type="text" value={{valid_credentials}}>
+                <input id=username name="username" type="text" value="{{valid_credentials}}">
                 <span id="error" class="error">{{invalid_credentials}}</span>
             </td>
         </tr>
@@ -17,6 +17,7 @@
             <td><label for="password">Password</label></td>
             <td>
                 <input name="password" type="password">
+                <span id="error" class="error">{{invalid_password}}</span>
             </td>
         </tr>
     </table>

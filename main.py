@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template
+from flask import Flask, request, redirect, render_template, session
 from flask_sqlalchemy import SQLAlchemy # this is the ORM; sequel alchemy needs a connection string to do its job
 
 app = Flask(__name__)
@@ -6,7 +6,7 @@ app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:!2B_brkn@localhost:8889/blogz' # this is the connection string 
 app.config['SQLALCHEMY_ECHO'] = True # this will show the SQL queries; not necessary 
 db = SQLAlchemy(app)  #making a new database object 
-
+app.secret_key = '!@fj9d_jfN39s$'
 # here is where you will create a model
 # the model creates a python object to create a blog class with properties (i.d., title, body)
 
@@ -32,6 +32,12 @@ class User(db.Model):
         def __init__(self, username, password): # this is the constructor for the user class ( with necessary parameters)
             self.username = username 
             self.password = password 
+
+@app.before_request
+def require_login(): # this checks every request to make sure that the user HAS logged in
+    allowed_routes = ['login', 'signup'] # this is essentially a white list for non-logged in users; else we get an endless 302 error loop 
+    if request.endpoint not in allowed_routes and 'user' not in session: # if their is not a key called 'user' in the session dictionary; if the user is not logged in 
+        return redirect('/login') # redirect to the login page
 
 @app.route('/newpost', methods=['POST', 'GET'])
 def newpost():
@@ -72,8 +78,11 @@ def login():
             passwd = request.form['password']
             account = User.query.filter_by(username=user).first() # this retrieves the first user with the username 
             if account and account.password == passwd: # this is convoluted, but detailed and it works for the signing in function
-                # remember that the user has logged in
+                session['user'] = user
                 return redirect('/blog')
+            elif account:
+                password_error = 'Password is incorrect'
+                return render_template('login.html', valid_credentials=user, invalid_password=password_error)
             else:
                 # return why the login failed
                 username_error = 'this user does not exist'
@@ -99,12 +108,18 @@ def signup():
             new_account = User(user, passwd)
             db.session.add(new_account)
             db.session.commit()
+            session['user'] = user
             return redirect('/newpost?id={0}'.format(new_account.id))
         else:
             username_error = 'This account already exists'
             return render_template('signup.html', valid_credentials=user, invalid_credentials=username_error)
         # need to validate user data 
     return render_template('signup.html')
+
+@app.route('/logout')
+def logout():
+    del session['user']
+    return redirect('/')
 
 @app.route('/')
 def main_page():
