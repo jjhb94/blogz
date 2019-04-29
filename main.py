@@ -25,12 +25,12 @@ class Blog(db.Model): # this creates a persistent class, or a class that can be 
 
 class User(db.Model):
         id = db.Column(db.Integer, primary_key=True)
-        username = db.Column(db.String(25))
+        username = db.Column(db.String(25), unique=True) # this limits the number of user names to be unique
         password = db.Column(db.String(25))
         blogs = db.relationship('Blog', backref='owner') # this signifies the relationship between the blog table and this user, binding user to blog posts they write
 
-        def __init__(self, username, password):
-            self.username = username
+        def __init__(self, username, password): # this is the constructor for the user class ( with necessary parameters)
+            self.username = username 
             self.password = password 
 
 @app.route('/newpost', methods=['POST', 'GET'])
@@ -72,9 +72,23 @@ def main_page():
     #else:
     # return redirect login.html 
 
-@app.route('/login', methods=['GET'])
+@app.route('/login', methods=['POST', 'GET'])
 def login():
-    return render_template('login.html')
+        if request.method == 'POST':
+            user = request.form['username']
+            passwd = request.form['password']
+            account = User.query.filter_by(username=user).first() # this retrieves the first user with the username 
+            if account and account.password == passwd: # this is convoluted, but detailed and it works for the signing in function
+                # remember that the user has logged in
+                return redirect('/blog')
+            else:
+                # return why the login failed
+                return '<h1>Error</h1>'
+        return render_template('login.html')
+
+@app.route('/signup', methods=['POST', 'GET'])
+def signup():
+    return render_template('signup.html')
 
 @app.route('/login', methods=['POST'])
 def verify_login():
@@ -87,11 +101,6 @@ def verify_login():
         else:
             return render_template('base.html')
 
-
-
-@app.route('/signup')
-def signup():
-    return render_template('signup.html')
 
 @app.route("/signup", methods=['POST'])
 def validate():
