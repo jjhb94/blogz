@@ -13,10 +13,6 @@
             <li>
                 <p>{{blog.new_blog}}</p>
                 <a href="/blog?id={{ blog.id }}">{{blog.title}}</a> <!-- is is the parameter that we are usining to return the blog post -->
-                <form method="POST" action="/delete-blog-post" style="display:inline-block;">
-                    <input type="hidden" name="blog-id" value="{{blog.id}}"/>
-                    <input type="submit" value="delete post" />
-                </form>
             </li>
         {% endfor %} 
     {% endif %}

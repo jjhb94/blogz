@@ -50,15 +50,6 @@ def newpost():
     return render_template('todos.html',title="Build a Blog", 
         blogs=blogs)
 
-@app.route('/delete-blog-post', methods=['POST'])
-def delete_posts():
-    blog_id = int(request.form['blog-id'])
-    blog = Blog.query.get(blog_id)
-    db.session.delete(blog)
-    db.session.commit()
-    return redirect('/')
-
-
 @app.route('/blog', methods=['GET', 'POST'])
 def home():
     id = request.args.get("id")
