@@ -36,7 +36,7 @@ class User(db.Model):
 
 @app.before_request
 def require_login(): # this checks every request to make sure that the user HAS logged in
-    allowed_routes = ['login', 'signup'] # this is essentially a white list for non-logged in users; else we get an endless 302 error loop 
+    allowed_routes = ['login', 'signup', 'home', 'main_page'    ] # this is essentially a white list for non-logged in users; else we get an endless 302 error loop 
     if request.endpoint not in allowed_routes and 'user' not in session: # if their is not a key called 'user' in the session dictionary; if the user is not logged in 
         return redirect('/login') # redirect to the login page
 
@@ -49,7 +49,9 @@ def newpost():
         blog_name = request.form['blog']
         blog_body = request.form['body']
         owner = User.query.filter_by(username=session['user']).first()
+
         new_blog = Blog(blog_name, blog_body, owner)
+
         db.session.add(new_blog)
         db.session.commit()
 
@@ -61,18 +63,25 @@ def newpost():
 
 @app.route('/blog', methods=['GET', 'POST'])
 def home():
-    owner = User.query.filter_by(username=session['user']).first()
-    id = request.args.get("id")
+    blogs = Blog.query.all()
+    # owner = User.query.filter_by(username=session['user']).first()
+    id = request.args.get('id')
+    user_id = request.args.get('user')
+
+    if user_id:
+        blogs = Blog.query.filter_by(owner_id=user_id).all()
+        return render_template('singleUser.html', blogs=blogs)
+
+    
     '''now we make a conditional to return the blog post if the ID is in the URL, 
        or just the main page with the blog posts '''
     if id:  # if the ID is in the URL,
         blogs = Blog.query.filter_by(id=id).all() # grab all of the blog entries on the main page and return them
         return render_template('blog.html', title="Blogz", 
-            blogs=blogs, owner=owner )
+            blogs=blogs)
     else:
-        blogs = Blog.query.all()
         return render_template('blog.html', title="Blogz",
-            blogs=blogs, owner=owner)
+            blogs=blogs)
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -129,9 +138,10 @@ def logout():
 
 @app.route('/')
 def main_page():
-    owner = User.query.filter_by(username=session['user']).first()
-    if 'user' in session:
-        return redirect('/blog?id={0}'.format(owner.id))
+    users = User.query.all()
+    blog = Blog.query.all()
+    return render_template('index.html', users=users, blog=blog)
+    
     #else:
     # return redirect login.html 
 
