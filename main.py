@@ -25,14 +25,14 @@ class Blog(db.Model): # this creates a persistent class, or a class that can be 
         return '<Blog {0}>'.format(self.title)
 
 class User(db.Model):
-        id = db.Column(db.Integer, primary_key=True)
-        username = db.Column(db.String(25), unique=True) # this limits the number of user names to be unique
-        password = db.Column(db.String(25))
-        blogs = db.relationship('Blog', backref='owner') # this signifies the relationship between the blog table and this user, binding user to blog posts they write
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(25), unique=True) # this limits the number of user names to be unique
+    password = db.Column(db.String(25))
+    blogs = db.relationship('Blog', backref='owner') # this signifies the relationship between the blog table and this user, binding user to blog posts they write
 
-        def __init__(self, username, password): # this is the constructor for the user class ( with necessary parameters)
-            self.username = username 
-            self.password = password 
+    def __init__(self, username, password): # this is the constructor for the user class ( with necessary parameters)
+        self.username = username 
+        self.password = password 
 
 @app.before_request
 def require_login(): # this checks every request to make sure that the user HAS logged in
@@ -85,23 +85,23 @@ def home():
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-        if request.method == 'POST':
-            user = request.form['username']
-            passwd = request.form['password']
-            account = User.query.filter_by(username=user).first() # this retrieves the first user with the username 
-            if account and account.password == passwd: # this is convoluted, but detailed and it works for the signing in function
-                session['user'] = user
-                flash("Login successful")
-                print(session)
-                return redirect('/blog')
-            elif account:
-                password_error = 'Password is incorrect'
-                return render_template('login.html', valid_credentials=user, invalid_password=password_error)
-            else:
-                # return why the login failed
-                username_error = 'this user does not exist'
-                return render_template('login.html', valid_credentials=user, invalid_credentials=username_error)
-        return render_template('login.html')
+    if request.method == 'POST':
+        user = request.form['username']
+        passwd = request.form['password']
+        account = User.query.filter_by(username=user).first() # this retrieves the first user with the username 
+        if account and account.password == passwd: # this is convoluted, but detailed and it works for the signing in function
+            session['user'] = user
+            flash("Login successful")
+            print(session)
+            return redirect('/blog')
+        elif account:
+            password_error = 'Password is incorrect'
+            return render_template('login.html', valid_credentials=user, invalid_password=password_error)
+        else:
+            # return why the login failed
+            username_error = 'this user does not exist'
+            return render_template('login.html', valid_credentials=user, invalid_credentials=username_error)
+    return render_template('login.html')
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
@@ -136,11 +136,15 @@ def logout():
     flash("Successfully Logged Out")
     return redirect('/')
 
-@app.route('/')
+@app.route('/', methods=['POST', 'GET'])
 def main_page():
+    if request.method== 'POST':
+        blogs = Blog.query.filter_by(id=id)
+        return render_template('singleUser.html', blog=blogs)
     users = User.query.all()
-    blog = Blog.query.all()
-    return render_template('index.html', users=users, blog=blog)
+    blogs = Blog.query.filter_by(id=id)
+    return render_template('index.html', users=users, blog=blogs)
+    
     
     #else:
     # return redirect login.html 

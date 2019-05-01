@@ -4,7 +4,7 @@
 
         {% for user in users %}
             <ul>
-                <a href="/blog?user={{blog.id}}">{{user.username}}</a>
+                <a href="/blog?user={{blog.owner_id}}">{{user.username}}</a>
             </ul>
         {% endfor %} 
 {% endblock %}

@@ -8,6 +8,12 @@
                 <p>{{blog.body}}</p>
             </ul><br>
         {% endfor %}
+    {% elif request.args.get("user") %}
+        {% for blog in blogs %}
+            <a href="/blog?id={{ blog.id }}">{{blog.title}}</a> <!-- is is the parameter that we are usining to return the blog post -->
+                <p>{{blog.body}}</p>
+                <p>written by <a href="/blog?user={{blog.owner_id}}">{{blog.owner.username}}</a></p>
+        {%  endfor %}
     {% else %}
         {% for blog in blogs %}
             <ul>
