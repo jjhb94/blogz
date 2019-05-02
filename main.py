@@ -138,9 +138,14 @@ def logout():
 
 @app.route('/', methods=['POST', 'GET'])
 def main_page():
-    if request.method== 'POST':
-        blogs = Blog.query.filter_by(id=id)
+    if request.method == 'POST':
+        user_id = request.args.get('user')
+    
+        blogs = Blog.query.filter_by(owner_id=user_id).all()
         return render_template('singleUser.html', blog=blogs)
+
+
+
     users = User.query.all()
     blogs = Blog.query.filter_by(id=id)
     return render_template('index.html', users=users, blog=blogs)
